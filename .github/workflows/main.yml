@@ -1,1 +1,36 @@
 name: test-ci
+
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      - name: Log in Github Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+
+      - name: Build and push a GHCR
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          # Aquí guardamos la versión 'latest' Y la versión única del commit
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+
