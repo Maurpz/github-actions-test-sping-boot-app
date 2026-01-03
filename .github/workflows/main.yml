@@ -23,6 +23,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
 
+      - name: Set image name (lowercase)
+        run: echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+
+
       - name: Build and push a GHCR
         uses: docker/build-push-action@v5
         with:
@@ -30,7 +34,7 @@ jobs:
           push: true
           # Aquí guardamos la versión 'latest' Y la versión única del commit
           tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
 
